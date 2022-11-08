@@ -15,7 +15,6 @@
     <description>country-determination-service</description>
     <properties>
         <java.version>19</java.version>
-        <wiremock.version>2.27.2</wiremock.version>
         <liquibase.plugin.version>4.17.2</liquibase.plugin.version>
     </properties>
     <dependencies>
@@ -69,12 +68,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock</artifactId>
-            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
