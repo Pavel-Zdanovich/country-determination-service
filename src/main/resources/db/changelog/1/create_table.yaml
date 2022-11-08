@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: CREATE TABLE
+      author: ZDAN
+      changes:
+        - createTable:
+            tableName: COUNTRIES
+            columns:
+              - column:
+                  name: ID
+                  type: INT
+              - column:
+                  name: NAME
+                  type: VARCHAR(255)
+              - column:
+                  name: CALLING_CODE
+                  type: VARCHAR(255)
+              - column:
+                  name: NSN_LENGTH
+                  type: INT
+        - addNotNullConstraint:
+            tableName: COUNTRIES
+            columnName: ID
+            columnDataType: INT
+            constraintName: COUNTRIES_ID_NOT_NULL
+        - addPrimaryKey:
+            tableName: COUNTRIES
+            columnNames: ID
+            constraintName: COUNTRIES_PK
+        - addNotNullConstraint:
+            tableName: COUNTRIES
+            columnName: NAME
+            columnDataType: VARCHAR(255)
+            constraintName: COUNTRIES_NAME_NOT_NULL
+        - addNotNullConstraint:
+            tableName: COUNTRIES
+            columnName: CALLING_CODE
+            columnDataType: VARCHAR(255)
+            constraintName: COUNTRIES_CALLING_CODE_NOT_NULL
+        - addUniqueConstraint:
+            tableName: COUNTRIES
+            columnNames: NAME, CALLING_CODE, NSN_LENGTH
+            constraintName: COUNTRIES_NAME_CALLING_CODE_NSN_LENGTH_UNIQUE
+      rollback:
+        - dropTable:
+            tableName: COUNTRIES
+            cascadeConstraints: true

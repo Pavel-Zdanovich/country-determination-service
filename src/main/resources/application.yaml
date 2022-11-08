@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: country-determination-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/country-determination-service?createDatabaseIfNotExist=true
+    username: root
+    password: Er50xY*#6ZYW
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  mvc:
+    problemdetails:
+      enabled: true
+logging:
+  level:
+    liquibase: debug
