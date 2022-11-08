@@ -2,27 +2,35 @@ package com.example.countrydeterminationservice;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Validated
 public class CountryService {
 
-    private static final int MIN_NUMBERS_LENGTH = 7;
-
-    private static final int MAX_CODE_LENGTH = 7;
-
-    private static final int MIN_NSN_LENGTH = 4;
-
     private final CountryRepository countryRepository;
+
+    private final int minNsnLength;
+
+    private final Node<Country> tree;
+
+    public CountryService(CountryRepository countryRepository) {
+        this.countryRepository = countryRepository;
+        this.minNsnLength = countryRepository.findMinOfCodeAndNsn();
+        List<Country> countries = countryRepository.findAll(Sort.by("callingCode"));
+        this.tree = Node.createTree(
+                countries,
+                Country::getCallingCode
+        );
+    }
 
     Country getById(@NotNull Long id) {
         return countryRepository.findById(id).orElseThrow();
@@ -42,27 +50,35 @@ public class CountryService {
             throw new RuntimeException(error);
         }
 
-        if (numbers.length() < MIN_NUMBERS_LENGTH) {
-            String error = "Too short: %s [%d] < %d".formatted(numbers, numbers.length(), MIN_NUMBERS_LENGTH);
+        if (numbers.length() < minNsnLength) {
+            String error = "Too short: %s [%d] < %d".formatted(numbers, numbers.length(), minNsnLength);
             log.error(error);
             throw new RuntimeException(error);
         }
 
-        Set<Country> countries = new HashSet<>();
-        for (int codeLength = 1; codeLength <= MAX_CODE_LENGTH; codeLength++) {
-            String callingCode = numbers.substring(0, codeLength);
-            int nsnLength = numbers.length() - codeLength;
-            if (nsnLength < MIN_NSN_LENGTH) {
-                break;
-            }
-            List<Country> list = countryRepository.findByCallingCodeAndNsnLength(callingCode, nsnLength);
+        return this.tree.findClosestTo(numbers);
+    }
+
+    List<Country> getByMobileNew(String numbers) {
+        return this.tree.findClosestTo(numbers);
+    }
+
+    List<Country> getByMobileOld(String numbers) {
+        int codeLength = 1;
+        List<Country> countries = countryRepository.findByCallingCodeStartsWith(numbers.substring(0, codeLength++));
+        for (int i = 0; i < countries.size(); i++) {
+            String callingCode = numbers.substring(0, codeLength++);
+            List<Country> list = countries.stream()
+                    .filter(country -> country.getCallingCode().startsWith(callingCode))
+                    .toList();
             if (list.isEmpty()) {
-                list = countryRepository.findByCallingCodeAndNsnLengthNull(callingCode);
+                break;
+            } else {
+                countries = list;
             }
-            countries.addAll(list);
         }
 
-        return new ArrayList<>(countries);
+        return countries;
     }
 
 }

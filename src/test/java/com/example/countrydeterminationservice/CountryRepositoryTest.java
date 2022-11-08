@@ -31,23 +31,12 @@ public class CountryRepositoryTest {
     }
 
     @Test
-    void findByCallingCodeAndNsnLengthNull_EqualityIsTrue() {
-        List<Country> actual = countryRepository.findByCallingCodeAndNsnLengthNull("7");
+    void findByCallingCodeStartsWith_EqualityIsTrue() {
+        List<Country> actual = countryRepository.findByCallingCodeStartsWith("7");
 
         Assertions.assertThat(actual)
                 .filteredOn("callingCode", "7")
-                .filteredOn(country -> country.getNsnLength() == null)
-                .hasSize(1);
-    }
-
-    @Test
-    void findByCallingCodeAndNsnLength_EqualityIsTrue() {
-        List<Country> actual = countryRepository.findByCallingCodeAndNsnLength("1", 10);
-
-        Assertions.assertThat(actual)
-                .filteredOn("callingCode", "1")
-                .filteredOn("nsnLength", 10)
-                .hasSize(2);
+                .hasSize(3);
     }
 
 }

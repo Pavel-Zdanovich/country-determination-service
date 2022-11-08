@@ -15,6 +15,7 @@
     <description>country-determination-service</description>
     <properties>
         <java.version>19</java.version>
+        <jmh.version>1.35</jmh.version>
         <liquibase.plugin.version>4.17.2</liquibase.plugin.version>
     </properties>
     <dependencies>
@@ -74,6 +75,17 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>spring-mock-mvc</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <version>${jmh.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <version>${jmh.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
