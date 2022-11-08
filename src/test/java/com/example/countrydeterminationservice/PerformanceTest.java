@@ -75,13 +75,13 @@ public class PerformanceTest {
      * @see #executeJmhRunner() .fork(0) option
      */
     @Benchmark
-    public void getByMobileNew() {
-        countryService.getByMobileNew("+375336644859");
+    public void getByMobileMap() {
+        countryService.getByMobileMap("375336644859");
     }
 
     @Benchmark
-    public void getByMobileOld() {
-        countryService.getByMobileOld("+375336644859");
+    public void getByMobileNew() {
+        countryService.getByMobileNew("375336644859");
     }
 
 }

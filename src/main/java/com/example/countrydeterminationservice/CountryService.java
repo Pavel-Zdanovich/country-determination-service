@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeMap;
 
 @Service
 @Slf4j
@@ -22,6 +23,8 @@ public class CountryService {
 
     private final Node<Country> tree;
 
+    private final TreeMap<String, Country> treeMap;
+
     public CountryService(CountryRepository countryRepository) {
         this.countryRepository = countryRepository;
         this.minNsnLength = countryRepository.findMinOfCodeAndNsn();
@@ -30,6 +33,10 @@ public class CountryService {
                 countries,
                 Country::getCallingCode
         );
+        this.treeMap = new TreeMap<>();
+        for (Country country : countries) {
+            this.treeMap.put(country.getCallingCode(), country);
+        }
     }
 
     Country getById(@NotNull Long id) {
@@ -59,26 +66,12 @@ public class CountryService {
         return this.tree.findClosestTo(numbers);
     }
 
-    List<Country> getByMobileNew(String numbers) {
-        return this.tree.findClosestTo(numbers);
+    List<Country> getByMobileMap(String numbers) {
+        return List.of(this.treeMap.lowerEntry(numbers).getValue());
     }
 
-    List<Country> getByMobileOld(String numbers) {
-        int codeLength = 1;
-        List<Country> countries = countryRepository.findByCallingCodeStartsWith(numbers.substring(0, codeLength++));
-        for (int i = 0; i < countries.size(); i++) {
-            String callingCode = numbers.substring(0, codeLength++);
-            List<Country> list = countries.stream()
-                    .filter(country -> country.getCallingCode().startsWith(callingCode))
-                    .toList();
-            if (list.isEmpty()) {
-                break;
-            } else {
-                countries = list;
-            }
-        }
-
-        return countries;
+    List<Country> getByMobileNew(String numbers) {
+        return this.tree.findClosestTo(numbers);
     }
 
 }
